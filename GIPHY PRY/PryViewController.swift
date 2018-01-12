@@ -8,6 +8,7 @@
 
 import UIKit
 import SDWebImage
+import SwiftyJSON
 
 class PryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -15,20 +16,42 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet weak var navItem: UINavigationItem!
     
     
+    private var gifsData : [JSON] = []
     private var gifs = [GiphyGIF]()
-    let searchController = UISearchController(searchResultsController: nil)
+    private let searchController = UISearchController(searchResultsController: nil)
     private var networkManager = NetworkManager()
     
+    public var ratings = Ratings()
+    
+    func localizeRating(rawRating: Ratings.ratings) -> String {
+        switch rawRating {
+        case .All:   return "All";
+        case .Y:     return "0+";
+        case .G:     return "6+";
+        case .PG:    return "10+";
+        case .PG13:  return "13+";
+        case .R:     return "18+"
+        }
+    }
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
+        var ratingsToDisplay: [String] = []
+        
+        let ratingsRaw = ratings.returnAsArray()
+        
+        for rating in ratingsRaw {
+            let localizedRating = localizeRating(rawRating: rating)
+            ratingsToDisplay.append(localizedRating)
+        }
+        
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
+        searchController.searchBar.scopeButtonTitles = ratingsToDisplay
         searchController.searchBar.delegate = self
         
         navItem.title = "Trending 🔥"
@@ -37,22 +60,20 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         
     }
     
-    
-    func gifEverTrended(gif: GiphyGIF) -> Bool {
-        return !gif.trendingDate.contains("0001") && !gif.trendingDate.contains("1970")
+    func prepareJson(rawResponse: Any) {
+        let json = JSON(rawResponse)
+        gifsData = json["data"].arrayValue
     }
-    
     
     func updateDataset() {
-        self.gifs = []
+        gifs = []
         
-        for gifData in networkManager.gifsData {
-            self.gifs.append(GiphyGIF(json: gifData))
+        for gifData in gifsData {
+            gifs.append(GiphyGIF(json: gifData))
         }
         
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
-    
     
     func searchIsActive() -> Bool {
         let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
@@ -81,7 +102,7 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         
         cell.label!.alpha = 0
         
-        if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
+        if !gif.neverTrended() && !searchBarIsEmpty() {
             cell.label!.alpha = 1
         }
         
@@ -95,14 +116,14 @@ extension PryViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
-        let rating = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
+        ratings.selectedItemIndex = searchBar.selectedScopeButtonIndex
+        let searchQuery = searchBar.text!
         
-        let request = networkManager.formRequest(searchController: searchController, rating: rating, isNotSearching: searchBarIsEmpty())
-        
+        let request = networkManager.formRequest(searchQuery: searchQuery, rating: ratings.returnSelected(), isNotSearching: searchBarIsEmpty())
         
         networkManager.makeRequest(request: request, completionHandler: {response, error in
             if let rawResponse = response {
-                self.networkManager.prepareJson(rawResponse: rawResponse)
+                self.prepareJson(rawResponse: rawResponse)
             }
             self.updateDataset()
         })

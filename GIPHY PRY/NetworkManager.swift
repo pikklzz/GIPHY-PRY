@@ -8,15 +8,12 @@
 
 import Foundation
 import Alamofire
-import SwiftyJSON
 
-
-class NetworkManager {
+struct NetworkManager {
     
-    var gifsData : [JSON] = []
+    let ratingConverter = RatingConverter()
     
-    
-    func formRequest(searchController: UISearchController?, rating: String, isNotSearching: Bool) -> String {
+    func formRequest(searchQuery: String, rating: Ratings.ratings, isNotSearching: Bool) -> String {
         
         let apiKey = "api_key=NUW4GGmip9WU5AUwAYwGnXrDpu640MBS"
         var request = "https://api.giphy.com/v1/gifs/"
@@ -25,23 +22,17 @@ class NetworkManager {
             request += "trending?\(apiKey)"
         }
         else {
-            let searchBar = searchController!.searchBar
-            let convertedSearchString = String(searchBar.text!.characters.map {
+            let convertedSearchString = String(searchQuery.map {
                 $0 == " " ? "+" : $0
             })
+            let convertedRating = ratingConverter.convert(rating: rating)
             
-            request += "search?q=\(convertedSearchString)&\(apiKey)"
-            
-            switch rating {
-            case "All":     break
-            default:        request += "&rating=\(rating)"
-            }
+            request += "search?q=\(convertedSearchString)&\(apiKey)&rating=\(convertedRating)"
         }
         
         return request
         
     }
-    
     
     func makeRequest(request: String, completionHandler: @escaping (Any?, Error?) -> ()) {
         
@@ -56,11 +47,6 @@ class NetworkManager {
             }
         }
         
-    }
-    
-    func prepareJson(rawResponse: Any) {
-        let json = JSON(rawResponse)
-        self.gifsData = json["data"].arrayValue
     }
     
 }
