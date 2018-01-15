@@ -95,10 +95,9 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         cell.gifPreview.sd_setIndicatorStyle(.white)
         cell.gifPreview.sd_setImage(with: URL(string: gif.url))
         
-        cell.label!.alpha = 0
-        
+        cell.trendingLabel.alpha = 0
         if !gif.neverTrended() && !searchBarIsEmpty() {
-            cell.label!.alpha = 1
+            cell.trendingLabel.alpha = 1
         }
         
         return cell
@@ -111,7 +110,7 @@ extension PryViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
         let searchBar = searchController.searchBar
-        let searchQuery = searchBar.text!
+        let searchQuery = searchBar.text ?? ""
         ratings.selectedItemIndex = searchBar.selectedScopeButtonIndex
         
         gifManager.getGifs(searchQuery: searchQuery, rating: ratings.convert(), isNotSearchQuery: searchBarIsEmpty(), completionHandler: {completed, error in

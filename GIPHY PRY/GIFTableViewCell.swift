@@ -11,7 +11,7 @@ import SDWebImage
 
 class GIFTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var label: UILabel!
+    @IBOutlet weak var trendingLabel: UILabel!
     @IBOutlet weak var gifPreview: FLAnimatedImageView!
     
 }
