@@ -11,9 +11,7 @@ import Alamofire
 
 struct NetworkManager {
     
-    let ratingConverter = RatingConverter()
-    
-    func formRequest(searchQuery: String, rating: Ratings.ratings, isNotSearching: Bool) -> String {
+    private func formAddress(searchQuery: String, rating: String, isNotSearching: Bool) -> String {
         
         let apiKey = "api_key=NUW4GGmip9WU5AUwAYwGnXrDpu640MBS"
         var request = "https://api.giphy.com/v1/gifs/"
@@ -25,16 +23,17 @@ struct NetworkManager {
             let convertedSearchString = String(searchQuery.map {
                 $0 == " " ? "+" : $0
             })
-            let convertedRating = ratingConverter.convert(rating: rating)
             
-            request += "search?q=\(convertedSearchString)&\(apiKey)&rating=\(convertedRating)"
+            request += "search?q=\(convertedSearchString)&\(apiKey)&rating=\(rating)"
         }
         
         return request
         
     }
     
-    func makeRequest(request: String, completionHandler: @escaping (Any?, Error?) -> ()) {
+    func searchGIF(searchQuery: String, rating: String, isNotSearchQuery: Bool, completionHandler: @escaping (Any?, Error?) -> ()) {
+        
+        let request = formAddress(searchQuery: searchQuery, rating: rating, isNotSearching: isNotSearchQuery)
         
         Alamofire.request(request).validate().responseJSON() { response in
             switch response.result {

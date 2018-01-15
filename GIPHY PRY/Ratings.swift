@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Ratings {
+struct Ratings: RatingConvertible {
     
     enum ratings: String {case All, Y, G, PG, PG13, R}
     
@@ -27,8 +27,19 @@ struct Ratings {
         return ratingsArray
     }
     
-    func returnSelected() -> Ratings.ratings {
+    var selectedRating: Ratings.ratings {
         return ratingsArray[selectedItemIndex]
+    }
+    
+    public func convert() -> String {
+        switch selectedRating {
+        case .All:   return "";
+        case .Y:     return "Y";
+        case .G:     return "G";
+        case .PG:    return "PG";
+        case .PG13:  return "PG-13";
+        case .R:     return "R"
+        }
     }
     
 }

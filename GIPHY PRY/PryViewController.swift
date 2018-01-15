@@ -8,7 +8,6 @@
 
 import UIKit
 import SDWebImage
-import SwiftyJSON
 
 class PryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -16,12 +15,11 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet weak var navItem: UINavigationItem!
     
     
-    private var gifsData : [JSON] = []
     private var gifs = [GiphyGIF]()
     private let searchController = UISearchController(searchResultsController: nil)
-    private var networkManager = NetworkManager()
     
     public var ratings = Ratings()
+    private var gifManager = GifManager()
     
     func localizeRating(rawRating: Ratings.ratings) -> String {
         switch rawRating {
@@ -60,15 +58,11 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         
     }
     
-    func prepareJson(rawResponse: Any) {
-        let json = JSON(rawResponse)
-        gifsData = json["data"].arrayValue
-    }
-    
     func updateDataset() {
+        
         gifs = []
         
-        for gifData in gifsData {
+        for gifData in gifManager.gifsData {
             gifs.append(GiphyGIF(json: gifData))
         }
         
@@ -92,6 +86,7 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GIFTableViewCell
         
         let gif = gifs[indexPath.row]
@@ -111,21 +106,18 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     
 }
 
-
 extension PryViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
+        
         let searchBar = searchController.searchBar
-        ratings.selectedItemIndex = searchBar.selectedScopeButtonIndex
         let searchQuery = searchBar.text!
+        ratings.selectedItemIndex = searchBar.selectedScopeButtonIndex
         
-        let request = networkManager.formRequest(searchQuery: searchQuery, rating: ratings.returnSelected(), isNotSearching: searchBarIsEmpty())
-        
-        networkManager.makeRequest(request: request, completionHandler: {response, error in
-            if let rawResponse = response {
-                self.prepareJson(rawResponse: rawResponse)
+        gifManager.getGifs(searchQuery: searchQuery, rating: ratings.convert(), isNotSearchQuery: searchBarIsEmpty(), completionHandler: {completed, error in
+            if completed {
+                self.updateDataset()
             }
-            self.updateDataset()
         })
         
     }

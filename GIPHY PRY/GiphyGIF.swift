@@ -12,9 +12,9 @@ import SwiftyJSON
 struct GiphyGIF {
     
     let url: String
-    let trendingDate: String
+    private let trendingDate: String
     
-    let neverTrendedDateAttribute = ["0001", "1970"]
+    private let neverTrendedDateAttribute = ["0001", "1970"]
     
     init(json: JSON) {
         self.url = json["images"]["fixed_width"]["url"].stringValue

@@ -10,5 +10,5 @@ import Foundation
 
 protocol RatingConvertible {
     init?()
-    mutating func convert(rating: Ratings.ratings) -> String
+    mutating func convert() -> String
 }
