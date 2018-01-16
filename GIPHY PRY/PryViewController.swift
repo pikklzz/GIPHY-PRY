@@ -14,11 +14,9 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet var tableView: UITableView!
     @IBOutlet weak var navItem: UINavigationItem!
     
-    
     private var gifs = [GiphyGIF]()
     let searchController = UISearchController(searchResultsController: nil)
     private var networkManager = NetworkManager()
-    
     
     override func viewDidLoad() {
         
@@ -31,7 +29,7 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
         searchController.searchBar.delegate = self
         
-        navItem.title = "Trending 🔥"
+        navItem.title = "Trending 🔥" 
         
         updateSearchResults(for: searchController)
         
