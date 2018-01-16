@@ -8,38 +8,32 @@
 
 import Foundation
 
-struct Ratings: RatingConvertible {
+enum Ratings: String {
+    case All = ""
+    case Y = "Y"
+    case G = "G"
+    case PG = "PG"
+    case PG13 = "PG-13"
+    case R = "R"
     
-    enum ratings: String {case All, Y, G, PG, PG13, R}
-    
-    let ratingsArray = [
-        ratings.All,
-        ratings.Y,
-        ratings.G,
-        ratings.PG,
-        ratings.PG13,
-        ratings.R
-    ]
-    
-    var selectedItemIndex = 0
-    
-    func returnAsArray() -> [Ratings.ratings] {
-        return ratingsArray
+    static func asArray() -> [Ratings] {
+        return [
+            Ratings.All,
+            Ratings.Y,
+            Ratings.G,
+            Ratings.PG,
+            Ratings.PG13,
+            Ratings.R
+        ]
     }
-    
-    var selectedRating: Ratings.ratings {
-        return ratingsArray[selectedItemIndex]
-    }
-    
-    public func convert() -> String {
-        switch selectedRating {
-        case .All:   return "";
-        case .Y:     return "Y";
-        case .G:     return "G";
-        case .PG:    return "PG";
-        case .PG13:  return "PG-13";
-        case .R:     return "R"
-        }
-    }
-    
 }
+
+struct RatingsSegmentControlDataSource {
+    var selectedItemIndex = 0
+    var selectedRating: Ratings {
+        return ratings[selectedItemIndex]
+    }
+    
+    private(set) var ratings = Ratings.asArray()
+}
+

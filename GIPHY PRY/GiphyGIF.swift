@@ -10,7 +10,6 @@ import Foundation
 import SwiftyJSON
 
 struct GiphyGIF {
-    
     let url: String
     private let trendingDate: String
     
@@ -24,5 +23,4 @@ struct GiphyGIF {
     func neverTrended() -> Bool {
         return trendingDate.contains(neverTrendedDateAttribute[0]) || trendingDate.contains(neverTrendedDateAttribute[1])
     }
-
 }

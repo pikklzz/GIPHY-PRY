@@ -10,13 +10,11 @@ import Foundation
 import Alamofire
 
 struct NetworkManager {
-    
-    private func formAddress(searchQuery: String, rating: String, isNotSearching: Bool) -> String {
-        
+    private func formAddress(searchQuery: String, rating: String, isTrending: Bool) -> String {
         let apiKey = "api_key=NUW4GGmip9WU5AUwAYwGnXrDpu640MBS"
         var request = "https://api.giphy.com/v1/gifs/"
         
-        if isNotSearching {
+        if isTrending {
             request += "trending?\(apiKey)"
         }
         else {
@@ -28,12 +26,10 @@ struct NetworkManager {
         }
         
         return request
-        
     }
     
-    func searchGIF(searchQuery: String, rating: String, isNotSearchQuery: Bool, completionHandler: @escaping (Any?, Error?) -> ()) {
-        
-        let request = formAddress(searchQuery: searchQuery, rating: rating, isNotSearching: isNotSearchQuery)
+    func searchGIF(searchQuery: String, rating: String, isTrending: Bool, completionHandler: @escaping (Any?, Error?) -> ()) {
+        let request = formAddress(searchQuery: searchQuery, rating: rating, isTrending: isTrending)
         
         Alamofire.request(request).validate().responseJSON() { response in
             switch response.result {
@@ -45,7 +41,5 @@ struct NetworkManager {
                 completionHandler(nil, error)
             }
         }
-        
     }
-    
 }

@@ -14,14 +14,13 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet var tableView: UITableView!
     @IBOutlet weak var navItem: UINavigationItem!
     
-    
     private var gifs = [GiphyGIF]()
     private let searchController = UISearchController(searchResultsController: nil)
     
-    public var ratings = Ratings()
+    private var ratingsSegmentControlDataSource = RatingsSegmentControlDataSource()
     private var gifManager = GifManager()
     
-    func localizeRating(rawRating: Ratings.ratings) -> String {
+    func localizeRating(rawRating: Ratings) -> String {
         switch rawRating {
         case .All:   return "All";
         case .Y:     return "0+";
@@ -33,12 +32,11 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         
         var ratingsToDisplay: [String] = []
         
-        let ratingsRaw = ratings.returnAsArray()
+        let ratingsRaw = ratingsSegmentControlDataSource.ratings
         
         for rating in ratingsRaw {
             let localizedRating = localizeRating(rawRating: rating)
@@ -55,18 +53,6 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         navItem.title = "Trending 🔥"
         
         updateSearchResults(for: searchController)
-        
-    }
-    
-    func updateDataset() {
-        
-        gifs = []
-        
-        for gifData in gifManager.gifsData {
-            gifs.append(GiphyGIF(json: gifData))
-        }
-        
-        tableView.reloadData()
     }
     
     func searchIsActive() -> Bool {
@@ -79,14 +65,11 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return gifs.count
     }
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GIFTableViewCell
         
         let gif = gifs[indexPath.row]
@@ -99,35 +82,30 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         if !gif.neverTrended() && !searchBarIsEmpty() {
             cell.trendingLabel.alpha = 1
         }
-        
+
         return cell
     }
-    
 }
 
 extension PryViewController: UISearchResultsUpdating {
-    
     func updateSearchResults(for searchController: UISearchController) {
-        
         let searchBar = searchController.searchBar
         let searchQuery = searchBar.text ?? ""
-        ratings.selectedItemIndex = searchBar.selectedScopeButtonIndex
+        ratingsSegmentControlDataSource.selectedItemIndex = searchBar.selectedScopeButtonIndex
+        let selectedRatingRawValue = ratingsSegmentControlDataSource.selectedRating.rawValue
         
-        gifManager.getGifs(searchQuery: searchQuery, rating: ratings.convert(), isNotSearchQuery: searchBarIsEmpty(), completionHandler: {completed, error in
-            if completed {
-                self.updateDataset()
+        gifManager.gifs(searchQuery: searchQuery, rating: selectedRatingRawValue, isTrending: searchBarIsEmpty()) { receivedGifs, error in
+            if let receivedGifs = receivedGifs {
+                self.gifs = receivedGifs
+                self.tableView.reloadData()
             }
-        })
-        
+        }
     }
-    
 }
 
 extension PryViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         updateSearchResults(for: searchController)
     }
-    
 }
 

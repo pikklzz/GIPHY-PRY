@@ -17,7 +17,6 @@
 		97A0B1131F967F3C00E6FF21 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A0B1121F967F3C00E6FF21 /* NetworkManager.swift */; };
 		97A0B1151F967F7900E6FF21 /* GIFTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A0B1141F967F7900E6FF21 /* GIFTableViewCell.swift */; };
 		DF1AD612200CAF6B007CDAE9 /* GifManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1AD611200CAF6B007CDAE9 /* GifManager.swift */; };
-		DF5C7EEC2008C62500F3B881 /* RatingConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF5C7EEB2008C62500F3B881 /* RatingConvertible.swift */; };
 		DF6248462007579B00504BD8 /* Ratings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6248452007579B00504BD8 /* Ratings.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +46,6 @@
 		97A0B1121F967F3C00E6FF21 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		97A0B1141F967F7900E6FF21 /* GIFTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFTableViewCell.swift; sourceTree = "<group>"; };
 		DF1AD611200CAF6B007CDAE9 /* GifManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifManager.swift; sourceTree = "<group>"; };
-		DF5C7EEB2008C62500F3B881 /* RatingConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingConvertible.swift; sourceTree = "<group>"; };
 		DF6248452007579B00504BD8 /* Ratings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ratings.swift; sourceTree = "<group>"; };
 		FED99F93DC4DB90BE3BCF086 /* Pods_GIPHY_PRY.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GIPHY_PRY.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -112,12 +110,11 @@
 			isa = PBXGroup;
 			children = (
 				97A0B10E1F967EE800E6FF21 /* PryViewController.swift */,
+				DF6248452007579B00504BD8 /* Ratings.swift */,
 				DF1AD611200CAF6B007CDAE9 /* GifManager.swift */,
 				97A0B1121F967F3C00E6FF21 /* NetworkManager.swift */,
-				DF6248452007579B00504BD8 /* Ratings.swift */,
 				97A0B1101F967F1D00E6FF21 /* GiphyGIF.swift */,
 				97A0B1141F967F7900E6FF21 /* GIFTableViewCell.swift */,
-				DF5C7EEB2008C62500F3B881 /* RatingConvertible.swift */,
 				978F58271F7F8C120067B67F /* Main.storyboard */,
 				978F58431F7F8C8B0067B67F /* Supporting Files */,
 			);
@@ -304,7 +301,6 @@
 				97A0B1131F967F3C00E6FF21 /* NetworkManager.swift in Sources */,
 				97A0B10F1F967EE800E6FF21 /* PryViewController.swift in Sources */,
 				97A0B1151F967F7900E6FF21 /* GIFTableViewCell.swift in Sources */,
-				DF5C7EEC2008C62500F3B881 /* RatingConvertible.swift in Sources */,
 				DF1AD612200CAF6B007CDAE9 /* GifManager.swift in Sources */,
 				978F58241F7F8C120067B67F /* AppDelegate.swift in Sources */,
 				DF6248462007579B00504BD8 /* Ratings.swift in Sources */,

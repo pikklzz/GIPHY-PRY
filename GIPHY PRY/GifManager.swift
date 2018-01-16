@@ -10,24 +10,24 @@ import Foundation
 import SwiftyJSON
 
 struct GifManager {
-    
-    var gifsData : [JSON] = []
     private var networkManager = NetworkManager()
     
-    mutating func getGifs(searchQuery: String, rating: String, isNotSearchQuery: Bool, completionHandler: @escaping (Bool, Error?) -> ()) {
+    mutating func gifs(searchQuery: String, rating: String, isTrending: Bool, completionHandler: @escaping ([GiphyGIF]?, Error?) -> ()) {
         
-        func parseJSON(rawResponse: Any) {
-            let json = JSON(rawResponse)
-            gifsData = json["data"].arrayValue
-        }
+        var gifsData : [JSON] = []
+        var gifs: [GiphyGIF] = []
         
-        networkManager.searchGIF(searchQuery: searchQuery, rating: rating, isNotSearchQuery: isNotSearchQuery, completionHandler: {response, error in
+        networkManager.searchGIF(searchQuery: searchQuery, rating: rating, isTrending: isTrending) {response, error in
             if let rawResponse = response {
-                parseJSON(rawResponse: rawResponse)
+                let json = JSON(rawResponse)
+                gifsData = json["data"].arrayValue
             }
-            completionHandler(true, nil)
-        })
-        
+            
+            for gifData in gifsData {
+                gifs.append(GiphyGIF(json: gifData))
+            }
+            
+            completionHandler(gifs, nil)
+        }
     }
-    
 }
