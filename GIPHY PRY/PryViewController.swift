@@ -98,6 +98,7 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     func setTableView() {
         let tableViewCellHeight: CGFloat = 210
         
+        tableView.backgroundView = UIView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
