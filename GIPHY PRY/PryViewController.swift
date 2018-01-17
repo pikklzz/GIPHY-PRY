@@ -14,45 +14,46 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet var tableView: UITableView!
     @IBOutlet weak var navItem: UINavigationItem!
     
-    
     private var gifs = [GiphyGIF]()
-    let searchController = UISearchController(searchResultsController: nil)
-    private var networkManager = NetworkManager()
+    private let searchController = UISearchController(searchResultsController: nil)
     
+    private var ratingsSegmentControlDataSource = RatingsSegmentControlDataSource()
+    private var gifManager = GifManager()
+    
+    func localizeRating(rawRating: Ratings) -> String {
+        switch rawRating {
+        case .All:   return "All";
+        case .Y:     return "0+";
+        case .G:     return "6+";
+        case .PG:    return "10+";
+        case .PG13:  return "13+";
+        case .R:     return "18+"
+        }
+    }
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
+        
+        var ratingsToDisplay: [String] = []
+        
+        let ratingsRaw = ratingsSegmentControlDataSource.ratings
+        
+        for rating in ratingsRaw {
+            let localizedRating = localizeRating(rawRating: rating)
+            ratingsToDisplay.append(localizedRating)
+        }
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
+        searchController.searchBar.scopeButtonTitles = ratingsToDisplay
         searchController.searchBar.delegate = self
         
         navItem.title = "Trending 🔥"
         
         updateSearchResults(for: searchController)
-        
     }
-    
-    
-    func gifEverTrended(gif: GiphyGIF) -> Bool {
-        return !gif.trendingDate.contains("0001") && !gif.trendingDate.contains("1970")
-    }
-    
-    
-    func updateDataset() {
-        self.gifs = []
-        
-        for gifData in networkManager.gifsData {
-            self.gifs.append(GiphyGIF(json: gifData))
-        }
-        
-        self.tableView.reloadData()
-    }
-    
     
     func searchIsActive() -> Bool {
         let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
@@ -64,11 +65,9 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return gifs.count
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GIFTableViewCell
@@ -79,43 +78,34 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         cell.gifPreview.sd_setIndicatorStyle(.white)
         cell.gifPreview.sd_setImage(with: URL(string: gif.url))
         
-        cell.label!.alpha = 0
-        
-        if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
-            cell.label!.alpha = 1
+        cell.trendingLabel.alpha = 0
+        if !gif.neverTrended() && !searchBarIsEmpty() {
+            cell.trendingLabel.alpha = 1
         }
-        
+
         return cell
     }
-    
 }
 
-
 extension PryViewController: UISearchResultsUpdating {
-    
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
-        let rating = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
+        let searchQuery = searchBar.text ?? ""
+        ratingsSegmentControlDataSource.selectedItemIndex = searchBar.selectedScopeButtonIndex
+        let selectedRatingRawValue = ratingsSegmentControlDataSource.selectedRating.rawValue
         
-        let request = networkManager.formRequest(searchController: searchController, rating: rating, isNotSearching: searchBarIsEmpty())
-        
-        
-        networkManager.makeRequest(request: request, completionHandler: {response, error in
-            if let rawResponse = response {
-                self.networkManager.prepareJson(rawResponse: rawResponse)
+        gifManager.gifs(searchQuery: searchQuery, rating: selectedRatingRawValue, isTrending: searchBarIsEmpty()) { receivedGifs, error in
+            if let receivedGifs = receivedGifs {
+                self.gifs = receivedGifs
+                self.tableView.reloadData()
             }
-            self.updateDataset()
-        })
-        
+        }
     }
-    
 }
 
 extension PryViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         updateSearchResults(for: searchController)
     }
-    
 }
 

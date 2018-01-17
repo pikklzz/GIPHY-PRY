@@ -9,14 +9,18 @@
 import Foundation
 import SwiftyJSON
 
-class GiphyGIF {
-    
+struct GiphyGIF {
     let url: String
-    let trendingDate: String
+    private let trendingDate: String
+    
+    private let neverTrendedDateAttribute = ["0001", "1970"]
     
     init(json: JSON) {
         self.url = json["images"]["fixed_width"]["url"].stringValue
         self.trendingDate = json["trending_datetime"].stringValue
     }
     
+    func neverTrended() -> Bool {
+        return trendingDate.contains(neverTrendedDateAttribute[0]) || trendingDate.contains(neverTrendedDateAttribute[1])
+    }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="1Cl-eu-nDm">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="1Cl-eu-nDm">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -29,7 +29,7 @@
                                 <color key="separatorColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="sectionIndexBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" rowHeight="210" id="k8z-ve-uZP" customClass="GIFTableViewCell" customModule="GIPHY_PRY" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" misplaced="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" rowHeight="210" id="k8z-ve-uZP" customClass="GIFTableViewCell" customModule="GIPHY_PRY" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="210"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="k8z-ve-uZP" id="E3n-2v-YBK">
@@ -42,7 +42,7 @@
                                                     <viewLayoutGuide key="safeArea" id="b5T-Oq-Iom"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🔥" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v65-I5-vOs">
-                                                    <rect key="frame" x="8" y="8" width="359" height="34"/>
+                                                    <rect key="frame" x="15" y="11" width="345" height="34"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="34" id="jNq-Ex-kGm"/>
                                                     </constraints>
@@ -66,7 +66,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="gifPreview" destination="OPj-DD-0nl" id="tvC-x6-UOb"/>
-                                            <outlet property="label" destination="v65-I5-vOs" id="VGs-hI-WZF"/>
+                                            <outlet property="trendingLabel" destination="v65-I5-vOs" id="VGs-hI-WZF"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
