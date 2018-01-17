@@ -11,16 +11,26 @@ import SDWebImage
 
 class PryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    @IBOutlet var tableView: UITableView!
-    @IBOutlet weak var navItem: UINavigationItem!
-    
     private var gifs = [GiphyGIF]()
     let searchController = UISearchController(searchResultsController: nil)
+    
+    private let cellIdentifer = "Cell"
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(GIFTableViewCell.self, forCellReuseIdentifier: GIFTableViewCell.cellIdentifier)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     private var networkManager = NetworkManager()
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
+        
+        setTableView()
+        setNavigationBar()
+        setSearchBar()
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
@@ -29,10 +39,9 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
         searchController.searchBar.delegate = self
         
-        navItem.title = "Trending 🔥" 
+        title = "Trending 🔥"
         
         updateSearchResults(for: searchController)
-        
     }
     
     
@@ -69,7 +78,7 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GIFTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifer, for: indexPath) as! GIFTableViewCell
         
         let gif = gifs[indexPath.row]
         
@@ -77,20 +86,54 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         cell.gifPreview.sd_setIndicatorStyle(.white)
         cell.gifPreview.sd_setImage(with: URL(string: gif.url))
         
-        cell.label!.alpha = 0
+        cell.trendingLabel.alpha = 0
         
         if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
-            cell.label!.alpha = 1
+            cell.trendingLabel.alpha = 1
         }
         
         return cell
+    }
+    
+    func setTableView() {
+        let tableViewCellHeight: CGFloat = 210
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .black
+        tableView.allowsSelection = false
+        tableView.keyboardDismissMode = .onDrag
+        tableView.clipsToBounds = true
+        
+        view.addSubview(tableView)
+        
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.rowHeight = tableViewCellHeight
+    }
+    
+    func setNavigationBar() {
+        navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.isOpaque = true
+        navigationController?.navigationBar.clearsContextBeforeDrawing = true
+        navigationController?.navigationBar.autoresizesSubviews = true
+        navigationController?.navigationBar.isUserInteractionEnabled = true
+    }
+    
+    func setSearchBar() {
+        UISearchBar.appearance().tintColor = .white
+        UISearchBar.appearance().barStyle = .black
+        UISearchBar.appearance().isTranslucent = false
     }
     
 }
 
 
 extension PryViewController: UISearchResultsUpdating {
-    
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let rating = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
@@ -104,16 +147,12 @@ extension PryViewController: UISearchResultsUpdating {
             }
             self.updateDataset()
         })
-        
     }
-    
 }
 
 extension PryViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         updateSearchResults(for: searchController)
     }
-    
 }
 
