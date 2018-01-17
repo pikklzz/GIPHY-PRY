@@ -16,11 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        let pryViewController  = PryViewController()
         
         guard let window = window else { return false }
+        let pryViewController  = PryViewController()
         window.rootViewController = UINavigationController(rootViewController: pryViewController)
         window.makeKeyAndVisible()
+        
+        UISearchBar.appearance().tintColor = .white
+        UISearchBar.appearance().barStyle = .black
+        UISearchBar.appearance().isTranslucent = false
         
         return true
     }

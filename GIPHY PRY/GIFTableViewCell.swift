@@ -11,10 +11,12 @@ import SDWebImage
 
 class GIFTableViewCell: UITableViewCell {
     static let cellIdentifier = "Cell"
-    var trendingLabel = UILabel()
-    var gifPreview = FLAnimatedImageView()
+    private(set) var trendingLabel = UILabel()
+    private(set) var gifPreview = FLAnimatedImageView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        var allConstraints: [NSLayoutConstraint] = []
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.addSubview(trendingLabel)
@@ -22,26 +24,25 @@ class GIFTableViewCell: UITableViewCell {
         
         backgroundColor = .black
         gifPreview.translatesAutoresizingMaskIntoConstraints = false
-        gifPreview.frame = CGRect(x: 0, y: 0, width: 375, height: 210)
         gifPreview.contentMode = .scaleAspectFill
         gifPreview.clipsToBounds = true
         
-        gifPreview.leftAnchor.constraint(equalTo: contentView.leftAnchor).isActive = true
-        gifPreview.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
-        gifPreview.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        gifPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        allConstraints.append(gifPreview.leftAnchor.constraint(equalTo: contentView.leftAnchor))
+        allConstraints.append(gifPreview.rightAnchor.constraint(equalTo: contentView.rightAnchor))
+        allConstraints.append(gifPreview.topAnchor.constraint(equalTo: contentView.topAnchor))
+        allConstraints.append(gifPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor))
         
         trendingLabel.translatesAutoresizingMaskIntoConstraints = false
-        trendingLabel.isEnabled = true
         trendingLabel.textAlignment = .right
         trendingLabel.font = UIFont.systemFont(ofSize: 30)
-        trendingLabel.frame = CGRect(x: 15, y: 11, width: 345, height: 34)
         trendingLabel.text = "🔥"
         
-        trendingLabel.heightAnchor.constraint(equalToConstant: 34)
-        trendingLabel.leftAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.leftAnchor).isActive = true
-        trendingLabel.rightAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.rightAnchor).isActive = true
-        trendingLabel.topAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.topAnchor).isActive = true
+        allConstraints.append(trendingLabel.heightAnchor.constraint(equalToConstant: 34))
+        allConstraints.append(trendingLabel.leftAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.leftAnchor))
+        allConstraints.append(trendingLabel.rightAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.rightAnchor))
+        allConstraints.append(trendingLabel.topAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.topAnchor))
+
+        NSLayoutConstraint.activate(allConstraints)
     }
     
     required init?(coder aDecoder: NSCoder) {

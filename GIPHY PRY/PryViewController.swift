@@ -9,12 +9,10 @@
 import UIKit
 import SDWebImage
 
-class PryViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class PryViewController: UIViewController {
     
     private var gifs = [GiphyGIF]()
-    let searchController = UISearchController(searchResultsController: nil)
-    
-    private let cellIdentifer = "Cell"
+    private let searchController = UISearchController(searchResultsController: nil)
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -25,77 +23,8 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
     
     private var networkManager = NetworkManager()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        setTableView()
-        setNavigationBar()
-        setSearchBar()
-        
-        searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
-        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
-        searchController.searchBar.delegate = self
-        
-        title = "Trending 🔥"
-        
-        updateSearchResults(for: searchController)
-    }
-    
-    
-    func gifEverTrended(gif: GiphyGIF) -> Bool {
-        return !gif.trendingDate.contains("0001") && !gif.trendingDate.contains("1970")
-    }
-    
-    
-    func updateDataset() {
-        self.gifs = []
-        
-        for gifData in networkManager.gifsData {
-            self.gifs.append(GiphyGIF(json: gifData))
-        }
-        
-        self.tableView.reloadData()
-    }
-    
-    
-    func searchIsActive() -> Bool {
-        let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
-        return searchController.isActive && (!searchBarIsEmpty() || searchBarScopeIsFiltering)
-    }
-    
-    
-    func searchBarIsEmpty() -> Bool {
-        return searchController.searchBar.text?.isEmpty ?? true
-    }
-    
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return gifs.count
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifer, for: indexPath) as! GIFTableViewCell
-        
-        let gif = gifs[indexPath.row]
-        
-        cell.gifPreview.sd_setShowActivityIndicatorView(true)
-        cell.gifPreview.sd_setIndicatorStyle(.white)
-        cell.gifPreview.sd_setImage(with: URL(string: gif.url))
-        
-        cell.trendingLabel.alpha = 0
-        
-        if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
-            cell.trendingLabel.alpha = 1
-        }
-        
-        return cell
-    }
-    
-    func setTableView() {
+    private func setupTableView() {
+        var allTableViewConstraints: [NSLayoutConstraint] = []
         let tableViewCellHeight: CGFloat = 210
         
         tableView.backgroundView = UIView()
@@ -109,14 +38,16 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         
         view.addSubview(tableView)
         
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        allTableViewConstraints.append(tableView.leftAnchor.constraint(equalTo: view.leftAnchor))
+        allTableViewConstraints.append(tableView.rightAnchor.constraint(equalTo: view.rightAnchor))
+        allTableViewConstraints.append(tableView.topAnchor.constraint(equalTo: view.topAnchor))
+        allTableViewConstraints.append(tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor))
         tableView.rowHeight = tableViewCellHeight
+        
+        NSLayoutConstraint.activate(allTableViewConstraints)
     }
     
-    func setNavigationBar() {
+    private func setupNavigationBar() {
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.navigationBar.isOpaque = true
@@ -125,12 +56,46 @@ class PryViewController: UIViewController, UITableViewDataSource, UITableViewDel
         navigationController?.navigationBar.isUserInteractionEnabled = true
     }
     
-    func setSearchBar() {
-        UISearchBar.appearance().tintColor = .white
-        UISearchBar.appearance().barStyle = .black
-        UISearchBar.appearance().isTranslucent = false
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupTableView()
+        setupNavigationBar()
+        
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
+        definesPresentationContext = true
+        tableView.tableHeaderView = searchController.searchBar
+        searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
+        searchController.searchBar.delegate = self
+        
+        title = "Trending 🔥"
+        
+        updateSearchResults(for: searchController)
     }
     
+    func gifEverTrended(gif: GiphyGIF) -> Bool {
+        return !gif.trendingDate.contains("0001") && !gif.trendingDate.contains("1970")
+    }
+    
+    func updateDataset() {
+        self.gifs = []
+        
+        for gifData in networkManager.gifsData {
+            self.gifs.append(GiphyGIF(json: gifData))
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func searchIsActive() -> Bool {
+        let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
+        return searchController.isActive && (!searchBarIsEmpty() || searchBarScopeIsFiltering)
+    }
+    
+    func searchBarIsEmpty() -> Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
 }
 
 
@@ -140,7 +105,6 @@ extension PryViewController: UISearchResultsUpdating {
         let rating = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
         
         let request = networkManager.formRequest(searchController: searchController, rating: rating, isNotSearching: searchBarIsEmpty())
-        
         
         networkManager.makeRequest(request: request, completionHandler: {response, error in
             if let rawResponse = response {
@@ -157,3 +121,26 @@ extension PryViewController: UISearchBarDelegate {
     }
 }
 
+extension PryViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return gifs.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: GIFTableViewCell.cellIdentifier, for: indexPath) as! GIFTableViewCell
+        
+        let gif = gifs[indexPath.row]
+        
+        cell.gifPreview.sd_setShowActivityIndicatorView(true)
+        cell.gifPreview.sd_setIndicatorStyle(.white)
+        cell.gifPreview.sd_setImage(with: URL(string: gif.url))
+        
+        if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
+            cell.trendingLabel.alpha = 1
+        } else {
+            cell.trendingLabel.alpha = 0
+        }
+        
+        return cell
+    }
+}

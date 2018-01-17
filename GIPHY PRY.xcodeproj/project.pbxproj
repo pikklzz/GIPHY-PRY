@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		907E598F41EA3045F05F0D9E /* Pods_GIPHY_PRY.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FED99F93DC4DB90BE3BCF086 /* Pods_GIPHY_PRY.framework */; };
 		978F58241F7F8C120067B67F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978F58231F7F8C120067B67F /* AppDelegate.swift */; };
-		978F58291F7F8C120067B67F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 978F58271F7F8C120067B67F /* Main.storyboard */; };
 		978F582B1F7F8C120067B67F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 978F582A1F7F8C120067B67F /* Assets.xcassets */; };
 		978F582E1F7F8C120067B67F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 978F582C1F7F8C120067B67F /* LaunchScreen.storyboard */; };
 		97A0B10F1F967EE800E6FF21 /* PryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97A0B10E1F967EE800E6FF21 /* PryViewController.swift */; };
@@ -34,7 +33,6 @@
 		49EFC0A52B490186F9D83F05 /* Pods-GIPHY PRY.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GIPHY PRY.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GIPHY PRY/Pods-GIPHY PRY.debug.xcconfig"; sourceTree = "<group>"; };
 		978F58201F7F8C120067B67F /* GIPHY PRY.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GIPHY PRY.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		978F58231F7F8C120067B67F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		978F58281F7F8C120067B67F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		978F582A1F7F8C120067B67F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		978F582D1F7F8C120067B67F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		978F582F1F7F8C120067B67F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -109,7 +107,6 @@
 				97A0B1101F967F1D00E6FF21 /* GiphyGIF.swift */,
 				97A0B1121F967F3C00E6FF21 /* NetworkManager.swift */,
 				97A0B1141F967F7900E6FF21 /* GIFTableViewCell.swift */,
-				978F58271F7F8C120067B67F /* Main.storyboard */,
 				978F58431F7F8C8B0067B67F /* Supporting Files */,
 			);
 			path = "GIPHY PRY";
@@ -214,7 +211,6 @@
 			files = (
 				978F582E1F7F8C120067B67F /* LaunchScreen.storyboard in Resources */,
 				978F582B1F7F8C120067B67F /* Assets.xcassets in Resources */,
-				978F58291F7F8C120067B67F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,14 +314,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		978F58271F7F8C120067B67F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				978F58281F7F8C120067B67F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		978F582C1F7F8C120067B67F /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
