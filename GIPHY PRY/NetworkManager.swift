@@ -8,42 +8,28 @@
 
 import Foundation
 import Alamofire
-import SwiftyJSON
 
-
-class NetworkManager {
-    
-    var gifsData : [JSON] = []
-    
-    
-    func formRequest(searchController: UISearchController?, rating: String, isNotSearching: Bool) -> String {
-        
+struct NetworkManager {
+    private func formAddress(searchQuery: String, rating: String, isTrending: Bool) -> String {
         let apiKey = "api_key=NUW4GGmip9WU5AUwAYwGnXrDpu640MBS"
         var request = "https://api.giphy.com/v1/gifs/"
         
-        if isNotSearching {
+        if isTrending {
             request += "trending?\(apiKey)"
         }
         else {
-            let searchBar = searchController!.searchBar
-            let convertedSearchString = String(searchBar.text!.characters.map {
+            let convertedSearchString = String(searchQuery.map {
                 $0 == " " ? "+" : $0
             })
             
-            request += "search?q=\(convertedSearchString)&\(apiKey)"
-            
-            switch rating {
-            case "All":     break
-            default:        request += "&rating=\(rating)"
-            }
+            request += "search?q=\(convertedSearchString)&\(apiKey)&rating=\(rating)"
         }
         
         return request
-        
     }
     
-    
-    func makeRequest(request: String, completionHandler: @escaping (Any?, Error?) -> ()) {
+    func searchGIF(searchQuery: String, rating: String, isTrending: Bool, completionHandler: @escaping (Any?, Error?) -> ()) {
+        let request = formAddress(searchQuery: searchQuery, rating: rating, isTrending: isTrending)
         
         Alamofire.request(request).validate().responseJSON() { response in
             switch response.result {
@@ -55,12 +41,5 @@ class NetworkManager {
                 completionHandler(nil, error)
             }
         }
-        
     }
-    
-    func prepareJson(rawResponse: Any) {
-        let json = JSON(rawResponse)
-        self.gifsData = json["data"].arrayValue
-    }
-    
 }

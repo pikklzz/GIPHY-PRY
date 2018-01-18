@@ -21,8 +21,6 @@ class PryViewController: UIViewController {
         return tableView
     }()
     
-    private var networkManager = NetworkManager()
-    
     private func setupTableView() {
         var allTableViewConstraints: [NSLayoutConstraint] = []
         let tableViewCellHeight: CGFloat = 210
@@ -56,36 +54,45 @@ class PryViewController: UIViewController {
         navigationController?.navigationBar.isUserInteractionEnabled = true
     }
     
+    private var ratingsSegmentControlDataSource = RatingsSegmentControlDataSource()
+    private var gifManager = GifManager()
+    
+    func localizeRating(rawRating: Ratings) -> String {
+        switch rawRating {
+        case .All:   return "All";
+        case .Y:     return "0+";
+        case .G:     return "6+";
+        case .PG:    return "10+";
+        case .PG13:  return "13+";
+        case .R:     return "18+"
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupTableView()
         setupNavigationBar()
         
+        var ratingsToDisplay: [String] = []
+        
+        let ratingsRaw = ratingsSegmentControlDataSource.ratings
+        
+        for rating in ratingsRaw {
+            let localizedRating = localizeRating(rawRating: rating)
+            ratingsToDisplay.append(localizedRating)
+        }
+        
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ["All", "Y", "G", "PG", "PG-13", "R"]
+        searchController.searchBar.scopeButtonTitles = ratingsToDisplay
         searchController.searchBar.delegate = self
         
         title = "Trending 🔥"
         
         updateSearchResults(for: searchController)
-    }
-    
-    func gifEverTrended(gif: GiphyGIF) -> Bool {
-        return !gif.trendingDate.contains("0001") && !gif.trendingDate.contains("1970")
-    }
-    
-    func updateDataset() {
-        self.gifs = []
-        
-        for gifData in networkManager.gifsData {
-            self.gifs.append(GiphyGIF(json: gifData))
-        }
-        
-        self.tableView.reloadData()
     }
     
     func searchIsActive() -> Bool {
@@ -98,20 +105,20 @@ class PryViewController: UIViewController {
     }
 }
 
-
 extension PryViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
-        let rating = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
         
-        let request = networkManager.formRequest(searchController: searchController, rating: rating, isNotSearching: searchBarIsEmpty())
+        let searchQuery = searchBar.text ?? ""
+        ratingsSegmentControlDataSource.selectedItemIndex = searchBar.selectedScopeButtonIndex
+        let selectedRatingRawValue = ratingsSegmentControlDataSource.selectedRating.rawValue
         
-        networkManager.makeRequest(request: request, completionHandler: {response, error in
-            if let rawResponse = response {
-                self.networkManager.prepareJson(rawResponse: rawResponse)
+        gifManager.gifs(searchQuery: searchQuery, rating: selectedRatingRawValue, isTrending: searchBarIsEmpty()) { receivedGifs, error in
+            if let receivedGifs = receivedGifs {
+                self.gifs = receivedGifs
+                self.tableView.reloadData()
             }
-            self.updateDataset()
-        })
+        }
     }
 }
 
@@ -135,7 +142,7 @@ extension PryViewController: UITableViewDataSource, UITableViewDelegate {
         cell.gifPreview.sd_setIndicatorStyle(.white)
         cell.gifPreview.sd_setImage(with: URL(string: gif.url))
         
-        if gifEverTrended(gif: gif) && !searchBarIsEmpty() {
+        if !gif.neverTrended() && !searchBarIsEmpty() {
             cell.trendingLabel.alpha = 1
         } else {
             cell.trendingLabel.alpha = 0
