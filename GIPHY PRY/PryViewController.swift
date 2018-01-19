@@ -71,7 +71,7 @@ class PryViewController: UIViewController {
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+        self.navigationItem.searchController = searchController
         searchController.searchBar.scopeButtonTitles = ratingsForScopeButtonTitles
         searchController.searchBar.delegate = self
     }
