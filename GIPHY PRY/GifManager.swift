@@ -14,7 +14,7 @@ struct GifManager {
     
     mutating func gifs(searchQuery: String, rating: String, isTrending: Bool, completionHandler: @escaping ([GiphyGIF]?, Error?) -> ()) {
         
-        var gifsData : [JSON] = []
+        var gifsData: [JSON] = []
         var gifs: [GiphyGIF] = []
         
         networkManager.searchGIF(searchQuery: searchQuery, rating: rating, isTrending: isTrending) { response, error in

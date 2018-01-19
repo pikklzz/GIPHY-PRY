@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SDWebImage
 
 class PryViewController: UIViewController {
     
@@ -99,6 +98,7 @@ class PryViewController: UIViewController {
     }
 }
 
+// MARK: - UISearchResultsUpdating
 extension PryViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
@@ -116,12 +116,14 @@ extension PryViewController: UISearchResultsUpdating {
     }
 }
 
+// MARK: - UISearchBarDelegate
 extension PryViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         updateSearchResults(for: searchController)
     }
 }
 
+// MARK: - UITableViewDataSource, UITableViewDelegate
 extension PryViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return gifs.count
