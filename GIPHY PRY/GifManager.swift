@@ -17,7 +17,7 @@ struct GifManager {
         var gifsData : [JSON] = []
         var gifs: [GiphyGIF] = []
         
-        networkManager.searchGIF(searchQuery: searchQuery, rating: rating, isTrending: isTrending) {response, error in
+        networkManager.searchGIF(searchQuery: searchQuery, rating: rating, isTrending: isTrending) { response, error in
             if let rawResponse = response {
                 let json = JSON(rawResponse)
                 gifsData = json["data"].arrayValue

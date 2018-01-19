@@ -21,43 +21,10 @@ class PryViewController: UIViewController {
         return tableView
     }()
     
-    private func setupTableView() {
-        var allTableViewConstraints: [NSLayoutConstraint] = []
-        let tableViewCellHeight: CGFloat = 210
-        
-        tableView.backgroundView = UIView()
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .black
-        tableView.allowsSelection = false
-        tableView.keyboardDismissMode = .onDrag
-        tableView.clipsToBounds = true
-        
-        view.addSubview(tableView)
-        
-        allTableViewConstraints.append(tableView.leftAnchor.constraint(equalTo: view.leftAnchor))
-        allTableViewConstraints.append(tableView.rightAnchor.constraint(equalTo: view.rightAnchor))
-        allTableViewConstraints.append(tableView.topAnchor.constraint(equalTo: view.topAnchor))
-        allTableViewConstraints.append(tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor))
-        tableView.rowHeight = tableViewCellHeight
-        
-        NSLayoutConstraint.activate(allTableViewConstraints)
-    }
-    
-    private func setupNavigationBar() {
-        navigationController?.navigationBar.barStyle = .black
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.isOpaque = true
-        navigationController?.navigationBar.clearsContextBeforeDrawing = true
-        navigationController?.navigationBar.autoresizesSubviews = true
-        navigationController?.navigationBar.isUserInteractionEnabled = true
-    }
-    
     private var ratingsSegmentControlDataSource = RatingsSegmentControlDataSource()
     private var gifManager = GifManager()
     
-    func localizeRating(rawRating: Ratings) -> String {
+    private func localizeRating(rawRating: Ratings) -> String {
         switch rawRating {
         case .All:   return "All";
         case .Y:     return "0+";
@@ -68,29 +35,56 @@ class PryViewController: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private func configureTableView() {
+        tableView.backgroundView = UIView()
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .black
+        tableView.allowsSelection = false
+        tableView.keyboardDismissMode = .onDrag
+        tableView.clipsToBounds = true
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 500.0
         
-        setupTableView()
-        setupNavigationBar()
+        view.addSubview(tableView)
+    }
+    
+    private func layoutTableView() {
+        var allTableViewConstraints: [NSLayoutConstraint] = []
         
-        var ratingsToDisplay: [String] = []
+        allTableViewConstraints.append(tableView.leftAnchor.constraint(equalTo: view.leftAnchor))
+        allTableViewConstraints.append(tableView.rightAnchor.constraint(equalTo: view.rightAnchor))
+        allTableViewConstraints.append(tableView.topAnchor.constraint(equalTo: view.topAnchor))
+        allTableViewConstraints.append(tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor))
         
+        NSLayoutConstraint.activate(allTableViewConstraints)
+    }
+    
+    private func configureSearchController() {
+        var ratingsForScopeButtonTitles: [String] = []
         let ratingsRaw = ratingsSegmentControlDataSource.ratings
-        
         for rating in ratingsRaw {
             let localizedRating = localizeRating(rawRating: rating)
-            ratingsToDisplay.append(localizedRating)
+            ratingsForScopeButtonTitles.append(localizedRating)
         }
         
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ratingsToDisplay
+        searchController.searchBar.scopeButtonTitles = ratingsForScopeButtonTitles
         searchController.searchBar.delegate = self
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         title = "Trending 🔥"
+        
+        configureTableView()
+        layoutTableView()
+        configureSearchController()
         
         updateSearchResults(for: searchController)
     }
@@ -135,18 +129,16 @@ extension PryViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: GIFTableViewCell.cellIdentifier, for: indexPath) as! GIFTableViewCell
-        
         let gif = gifs[indexPath.row]
         
         cell.gifPreview.sd_setShowActivityIndicatorView(true)
         cell.gifPreview.sd_setIndicatorStyle(.white)
         cell.gifPreview.sd_setImage(with: URL(string: gif.url))
         
-        if !gif.neverTrended() && !searchBarIsEmpty() {
-            cell.trendingLabel.alpha = 1
-        } else {
-            cell.trendingLabel.alpha = 0
-        }
+        cell.aspectRatio = gif.aspectRatio
+        
+        let gifFitsToBeTrended = !gif.neverTrended() && !searchBarIsEmpty()
+        cell.appropriateTrendingLabelState(is: gifFitsToBeTrended)
         
         return cell
     }
