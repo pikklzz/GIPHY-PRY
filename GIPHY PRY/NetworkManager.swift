@@ -16,8 +16,7 @@ struct NetworkManager {
         
         if isTrending {
             request += "trending?\(apiKey)"
-        }
-        else {
+        } else {
             let convertedSearchString = String(searchQuery.map {
                 $0 == " " ? "+" : $0
             })

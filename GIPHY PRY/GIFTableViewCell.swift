@@ -11,41 +11,69 @@ import SDWebImage
 
 class GIFTableViewCell: UITableViewCell {
     static let cellIdentifier = "Cell"
-    private(set) var trendingLabel = UILabel()
+    private let trendingLabel = UILabel()
     private(set) var gifPreview = FLAnimatedImageView()
+    private var aspectConstraint: NSLayoutConstraint? = nil
+    
+    var aspectRatio: Double = 0 {
+        didSet {
+            aspectConstraint = gifPreview.widthAnchor.constraint(equalTo: gifPreview.heightAnchor, multiplier: CGFloat(aspectRatio))
+            aspectConstraint?.priority = UILayoutPriority.defaultHigh
+            aspectConstraint?.isActive = true
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        var allConstraints: [NSLayoutConstraint] = []
+        
+        func configureCellContent() {
+            backgroundColor = .black
+            gifPreview.translatesAutoresizingMaskIntoConstraints = false
+            gifPreview.contentMode = .scaleToFill
+            gifPreview.clipsToBounds = true
+            
+            trendingLabel.translatesAutoresizingMaskIntoConstraints = false
+            trendingLabel.textAlignment = .right
+            trendingLabel.font = UIFont.systemFont(ofSize: 30)
+            trendingLabel.text = "🔥"
+            
+            contentView.addSubview(gifPreview)
+            contentView.addSubview(trendingLabel)
+        }
+        
+        func layoutCellContent() {
+            var allConstraints: [NSLayoutConstraint] = []
+            
+            allConstraints.append(gifPreview.leadingAnchor.constraint(equalTo: contentView.leadingAnchor))
+            allConstraints.append(gifPreview.trailingAnchor.constraint(equalTo: contentView.trailingAnchor))
+            allConstraints.append(gifPreview.topAnchor.constraint(equalTo: contentView.topAnchor))
+            allConstraints.append(gifPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor))
+            
+            allConstraints.append(trendingLabel.leadingAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.leadingAnchor))
+            allConstraints.append(trendingLabel.trailingAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.trailingAnchor))
+            allConstraints.append(trendingLabel.topAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.topAnchor))
+            
+            NSLayoutConstraint.activate(allConstraints)
+        }
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.addSubview(trendingLabel)
-        contentView.addSubview(gifPreview)
-        
-        backgroundColor = .black
-        gifPreview.translatesAutoresizingMaskIntoConstraints = false
-        gifPreview.contentMode = .scaleAspectFill
-        gifPreview.clipsToBounds = true
-        
-        allConstraints.append(gifPreview.leftAnchor.constraint(equalTo: contentView.leftAnchor))
-        allConstraints.append(gifPreview.rightAnchor.constraint(equalTo: contentView.rightAnchor))
-        allConstraints.append(gifPreview.topAnchor.constraint(equalTo: contentView.topAnchor))
-        allConstraints.append(gifPreview.bottomAnchor.constraint(equalTo: contentView.bottomAnchor))
-        
-        trendingLabel.translatesAutoresizingMaskIntoConstraints = false
-        trendingLabel.textAlignment = .right
-        trendingLabel.font = UIFont.systemFont(ofSize: 30)
-        trendingLabel.text = "🔥"
-        
-        allConstraints.append(trendingLabel.heightAnchor.constraint(equalToConstant: 34))
-        allConstraints.append(trendingLabel.leftAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.leftAnchor))
-        allConstraints.append(trendingLabel.rightAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.rightAnchor))
-        allConstraints.append(trendingLabel.topAnchor.constraint(equalTo: gifPreview.layoutMarginsGuide.topAnchor))
-
-        NSLayoutConstraint.activate(allConstraints)
+        configureCellContent()
+        layoutCellContent()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    func appropriateTrendingLabelState(is state: Bool){
+        trendingLabel.isHidden = !state
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        if let aspectConstraint = aspectConstraint {
+            gifPreview.removeConstraint(aspectConstraint)
+        }
     }
 }
